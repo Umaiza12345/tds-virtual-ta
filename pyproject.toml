@@ -4,4 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115.12",
+    "openai>=1.86.0",
+    "pydantic>=2.11.7",
+    "pytesseract>=0.3.13",
+]
