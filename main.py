@@ -9,6 +9,9 @@ import io
 import requests
 
 app = FastAPI()
+@app.get("/")
+async def root():
+    return {"message": "TDS Virtual TA is running"}
 
 # Allow all origins (for testing via Hoppscotch, etc.)
 app.add_middleware(
