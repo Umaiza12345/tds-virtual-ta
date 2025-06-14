@@ -9,9 +9,14 @@ import io
 import requests
 
 app = FastAPI()
+
 @app.get("/")
 async def root():
     return {"message": "TDS Virtual TA is running"}
+
+@app.get("/api/")
+async def api_info():
+    return {"message": "Send a POST request to this endpoint with your question and optional image."}
 
 # Allow all origins (for testing via Hoppscotch, etc.)
 app.add_middleware(
@@ -21,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Replace this with your real token from https://aiproxy.sanand.workers.dev/
 AIPROXY_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjIzZjIwMDI5NzhAZHMuc3R1ZHkuaWl0bS5hYy5pbiJ9.ahEQqUPp0yOwhjVUchlclw2tIkZNyhVmeZ7P3GyhYcQ"
 
 class QuestionRequest(BaseModel):
@@ -41,7 +45,7 @@ async def answer_question(data: QuestionRequest):
         except Exception as e:
             return {"error": f"Image processing failed: {str(e)}"}
 
-    # Final prompt to GPT
+    # Final prompt
     final_prompt = f"""
     Student Question: {data.question}
     Screenshot Text: {extracted_text}
@@ -68,30 +72,20 @@ async def answer_question(data: QuestionRequest):
                 ]
             }
         )
+
         if response.status_code != 200:
             return {"error": f"OpenAI API error: {response.status_code} - {response.text}"}
 
         result = response.json()
         answer = result["choices"][0]["message"]["content"]
 
-        return {
-            "answer": answer,
-            "links": [
-                {
-                    "url": "https://discourse.onlinedegree.iitm.ac.in/t/sample-post",
-                    "text": "Related discussion on Discourse"
-                }
-            ]
-        }
-
-    except Exception as e:
-        return {"error": f"Request failed: {str(e)}"}
+        # Default fallback link
         link_url = "https://discourse.onlinedegree.iitm.ac.in/t/sample-post"
-        if "gpt-3.5" in data.question or "gpt3.5" in data.question:
+        if "gpt-3.5" in data.question.lower() or "gpt3.5" in data.question.lower():
             link_url = "https://discourse.onlinedegree.iitm.ac.in/t/ga5-question-8-clarification/155939"
-        elif "GA4" in data.question or "bonus" in data.question:
+        elif "ga4" in data.question.lower() or "bonus" in data.question.lower():
             link_url = "https://discourse.onlinedegree.iitm.ac.in/t/ga4-data-sourcing-discussion-thread-tds-jan-2025/165959"
-        elif "Docker" in data.question or "Podman" in data.question:
+        elif "docker" in data.question.lower() or "podman" in data.question.lower():
             link_url = "https://tds.s-anand.net/#/docker"
 
         return {
@@ -104,3 +98,5 @@ async def answer_question(data: QuestionRequest):
             ]
         }
 
+    except Exception as e:
+        return {"error": f"Request failed: {str(e)}"}
