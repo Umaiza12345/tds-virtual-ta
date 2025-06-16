@@ -16,7 +16,7 @@ It accepts a text question (and an optional image), extracts any text from the i
 - Built using **FastAPI**
 - Performs **OCR** using `pytesseract`
 - Uses **OpenAI GPT-4o-mini** through Sanand’s Proxy
-- Hosted on **Replit**
+🌐 Deployment: [https://tds-virtual-ta-5794.onrender.com](https://tds-virtual-ta-5794.onrender.com)
 
 ## 📦 API Endpoint
 
